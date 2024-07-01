@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Employee Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <style>
+    /* Custom styles */
+    
+  </style>
+  <body>
+    <div class="container mt-5">
+      <h1>Generate Random Employees</h1>
+      <button type="button" id="new" class="btn btn-success">Generate Employees</button>
+      <div id="employee-cards" class="mt-5 bg-color-red">
+        <!-- Employee cards will be inserted here -->
+      </div>
+      <!-- Hidden template for employee card -->
+      <template id="employee-card-template">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Employee Details</h5>
+            <p class="card-text"><strong>Name:</strong> <span class="employee-name"></span></p>
+            <p class="card-text"><strong>Salary:</strong> <span class="employee-salary"></span></p>
+            <p class="card-text"><strong>Programming Language:</strong> <span class="employee-language"></span></p>
+            <p class="card-text"><strong>City:</strong> <span class="employee-city"></span></p>
+            <p class="card-text"><strong>Is Manager:</strong> <span class="employee-is-manager"></span></p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById("new").addEventListener('click', async () => {
+          try {
+            console.log("Generating new employees...");
+            let response = await fetch("/generate");
+            if (!response.ok) throw new Error("Network response was not ok");
+            let employees = await response.json();
+            console.log(employees);
+
+            let employeeCards = document.getElementById("employee-cards");
+            employeeCards.innerHTML = ""; // Clear previous cards
+
+            employees.forEach(employee => {
+              // Clone the template for each employee
+              let template = document.getElementById("employee-card-template").content.cloneNode(true);
+              let cardElement = template.querySelector(".card");
+
+              // Set employee details in the cloned card
+              cardElement.querySelector(".employee-name").innerText = employee.name;
+              cardElement.querySelector(".employee-salary").innerText = employee.salary;
+              cardElement.querySelector(".employee-language").innerText = employee.language;
+              cardElement.querySelector(".employee-city").innerText = employee.city;
+              cardElement.querySelector(".employee-is-manager").innerText = employee.isManager ? "Yes" : "No";
+
+              // Append the cloned card to employeeCards
+              employeeCards.appendChild(cardElement);
+            });
+          } catch (error) {
+            console.error("Failed to fetch employee data:", error);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
